@@ -1,0 +1,116 @@
+{
+  "population": "68,160 aggregate cells, same SQLite copy before/after index creation; sequential warm-cache local reads",
+  "baseline_bytes": 10285056,
+  "indexed_bytes": 13340672,
+  "indexes": [
+    "CREATE INDEX cells_category_cover ON cells(category,event_count)",
+    "CREATE INDEX cells_source_cover ON cells(source_id)"
+  ],
+  "before": {
+    "categories": {
+      "median_ms": 31.265075999954206,
+      "min_ms": 27.819127999919147,
+      "max_ms": 46.77932699996745,
+      "samples": 20,
+      "warmups_excluded": 2,
+      "result": [
+        [
+          "SPEECH",
+          34565
+        ],
+        [
+          "AMBIENT",
+          24818
+        ],
+        [
+          "IMPACT",
+          19852
+        ],
+        [
+          "MUSIC",
+          14778
+        ],
+        [
+          "ALARM",
+          5987
+        ]
+      ],
+      "plan": [
+        "SCAN cells",
+        "USE TEMP B-TREE FOR GROUP BY",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "source_count": {
+      "median_ms": 14.7713379999459,
+      "min_ms": 8.263397000064288,
+      "max_ms": 15.865329999996902,
+      "samples": 20,
+      "warmups_excluded": 2,
+      "result": [
+        [
+          16
+        ]
+      ],
+      "plan": [
+        "USE TEMP B-TREE FOR count(DISTINCT)",
+        "SCAN cells USING COVERING INDEX cells_filter"
+      ]
+    }
+  },
+  "after": {
+    "categories": {
+      "median_ms": 5.875329499986037,
+      "min_ms": 5.357974000162358,
+      "max_ms": 12.037794000207214,
+      "samples": 20,
+      "warmups_excluded": 2,
+      "result": [
+        [
+          "SPEECH",
+          34565
+        ],
+        [
+          "AMBIENT",
+          24818
+        ],
+        [
+          "IMPACT",
+          19852
+        ],
+        [
+          "MUSIC",
+          14778
+        ],
+        [
+          "ALARM",
+          5987
+        ]
+      ],
+      "plan": [
+        "SCAN cells USING COVERING INDEX cells_category_cover",
+        "USE TEMP B-TREE FOR ORDER BY"
+      ]
+    },
+    "source_count": {
+      "median_ms": 3.8053480002417928,
+      "min_ms": 2.820595999764919,
+      "max_ms": 7.750473000214697,
+      "samples": 20,
+      "warmups_excluded": 2,
+      "result": [
+        [
+          16
+        ]
+      ],
+      "plan": [
+        "SCAN cells USING COVERING INDEX cells_source_cover"
+      ]
+    }
+  },
+  "results_identical": true,
+  "speedup": {
+    "categories": 5.3214166116178685,
+    "source_count": 3.881731184377178
+  }
+}

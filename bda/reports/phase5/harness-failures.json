@@ -1,0 +1,66 @@
+[
+  {
+    "attempt": "run-20261107-a",
+    "status": "failed",
+    "failure_type": "KafkaException",
+    "steps": [
+      {
+        "name": "spark-image-ready",
+        "exit_code": 0,
+        "seconds": 0.06485787800011167
+      },
+      {
+        "name": "copy-ivy-readonly",
+        "exit_code": 0,
+        "seconds": 14.70208403100014
+      },
+      {
+        "name": "isolated-start",
+        "exit_code": 0,
+        "seconds": 12.19591084600006
+      },
+      {
+        "name": "isolated-stop",
+        "exit_code": 0,
+        "seconds": 1.070596309999928
+      }
+    ],
+    "application_broker_preserved": true,
+    "correction": "Hold AdminClient until all topic-creation futures complete; temporary client was garbage-collected"
+  },
+  {
+    "attempt": "run-20261107-b",
+    "status": "failed",
+    "failure_type": "TimeoutError",
+    "steps": [
+      {
+        "name": "spark-image-ready",
+        "exit_code": 0,
+        "seconds": 0.11517869699991934
+      },
+      {
+        "name": "copy-ivy-readonly",
+        "exit_code": 0,
+        "seconds": 3.987894438999774
+      },
+      {
+        "name": "isolated-start",
+        "exit_code": 0,
+        "seconds": 12.563007420000304
+      },
+      {
+        "name": "isolated-stop",
+        "exit_code": 0,
+        "seconds": 1.4262544050002361
+      }
+    ],
+    "application_broker_preserved": true,
+    "correction": "Use 10-second healthy-path delivery timeout; 1 second was too short for initial Kafka coordinator startup"
+  },
+  {
+    "attempt": "run-20261107-c",
+    "status": "refused during preflight",
+    "failure_type": "OSError: Address already in use",
+    "observation": "No listener was stopped; next attempt used a different dedicated port"
+  }
+]

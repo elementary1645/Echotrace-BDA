@@ -1,0 +1,49 @@
+# Used ONLY with a new generated echotrace-p5-* project. Never the application stack.
+services:
+  kafka:
+    image: apache/kafka:4.1.2
+    labels:
+      echotrace.phase5.disposable: 'true'
+    ports:
+      - '127.0.0.1:${P5_KAFKA_PORT:-19095}:9092'
+    cpus: 1
+    mem_limit: 1g
+    environment:
+      KAFKA_HEAP_OPTS: '-Xms256m -Xmx256m'
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: HOST://:9092,INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: HOST://127.0.0.1:${P5_KAFKA_PORT:-19095},INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: HOST:PLAINTEXT,INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ['CMD', '/opt/kafka/bin/kafka-topics.sh', '--bootstrap-server', 'kafka:29092', '--list']
+      interval: 5s
+      timeout: 10s
+      retries: 24
+  spark:
+    user: "${P5_UID:-1000}:${P5_GID:-1000}"
+    image: echotrace-spark:4.0.1
+    cpus: 2
+    mem_limit: 3g
+    environment:
+      SPARK_LOCAL_IP: 127.0.0.1
+    volumes:
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+      - ../../:/workspace:ro
+      - '${P5_RUN_DIR:?new run directory required}:/run'
+    entrypoint: ['/opt/spark/bin/spark-submit']
+volumes:
+  kafka-data:
+    labels:
+      echotrace.phase5.disposable: 'true'

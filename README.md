@@ -43,3 +43,15 @@ infrastructure/dashboard/run.sh setup
 infrastructure/dashboard/run.sh serve
 # Open http://127.0.0.1:8000/
 ```
+
+Phase 5: [integration, reliability and measured results](bda/PHASE5.md),
+[executed validation](bda/PHASE5_VALIDATION.md), and
+[reproduction, preflight and operational safety](bda/reliability/OPERATIONS.md).
+
+```bash
+infrastructure/reliability/run.sh preflight
+infrastructure/reliability/run.sh verify artifacts/phase5/evaluator-001 --campaign --port 19096
+```
+
+This uses an isolated disposable broker and new output/checkpoint roots; existing
+application infrastructure and benchmark evidence remain separate.
