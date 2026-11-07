@@ -180,3 +180,11 @@ docker compose -f infrastructure/kafka/compose.yml down
 
 The named volume survives `down`. `down -v` permanently deletes the development
 broker data; use it only when intentionally resetting the stack.
+
+## Phase 2
+
+The checkpointed Spark Kafka-to-Parquet pipeline, quarantine, event-time analytics,
+anomalies, Docker runtime, tests and demonstrations are documented in
+[PHASE2.md](PHASE2.md). Actual executed results are in
+[PHASE2_VALIDATION.md](PHASE2_VALIDATION.md). Phase 1 behavior remains optional and
+its delivery/timestamp limitations above still apply.

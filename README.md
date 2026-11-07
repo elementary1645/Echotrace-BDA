@@ -26,3 +26,5 @@ Code: MIT. Model weights: PANNs CNN14 (Kong et al., 2020), CC BY 4.0, downloaded
 
 Kafka analytics integration, schema semantics, setup, tests, and delivery limits:
 [BDA Phase 1 guide](bda/README.md).
+
+Phase 2 streaming analytics: [Spark setup, recovery, tests and demonstrations](bda/PHASE2.md).

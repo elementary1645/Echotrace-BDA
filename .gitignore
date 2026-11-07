@@ -28,3 +28,6 @@ backend/calibration.json
 .env
 .vscode/
 .idea/
+
+# Generated Phase 2 demonstration manifests and local outputs
+/artifacts/phase2/
