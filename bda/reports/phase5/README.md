@@ -9,7 +9,7 @@ The original Phase 3/4 reports and serving snapshot remain unchanged.
 | `acoustic-manifest.json` | Eight real finite EchoTrace simulation event records, producer metrics and successful enqueue-to-ack observations |
 | `e2e-first.json`, `e2e-restart.json` | Independently read Spark Parquet counts, provenance and acoustic aggregates before/after new late Kafka records |
 | `presentation.json` | Real HTTP samples, observed safe health response, generated-export validation and server shutdown exit |
-| `pipeline-browser.log` | Passing real generated-output Chromium check and one response-to-visible measurement |
+| `pipeline-browser.txt` | Passing real generated-output Chromium check and one response-to-visible measurement |
 | `environment.json` | Runtime/topology/resource caps and initial resource guard observations |
 | `resources.jsonl`, `resource-summary.json` | Rounded Docker samples and derived maxima across the isolated run, not profiler peaks |
 | `harness-failures.json` | Initial failed/refused attempts and corrections; never counted as passes |

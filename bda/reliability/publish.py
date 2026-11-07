@@ -14,7 +14,7 @@ def main():
     receipt=json.loads((root/'receipt.json').read_text());presentation=json.loads((root/'presentation.json').read_text())
     if receipt['status']!='passed' or presentation['status']!='passed':raise ValueError('both pipeline and presentation must have actually passed')
     mapping={'receipt.json':'run-receipt.json','presentation.json':'presentation.json','resources.jsonl':'resources.jsonl',
-             'e2e-first.json':'e2e-first.json','e2e-restart.json':'e2e-restart.json','browser.log':'pipeline-browser.log'}
+             'e2e-first.json':'e2e-first.json','e2e-restart.json':'e2e-restart.json','browser.log':'pipeline-browser.txt'}
     for src,dst in mapping.items():
         target=out/dst
         if target.exists():raise ValueError('report exists; publish a new evidence directory')
