@@ -31,3 +31,4 @@ backend/calibration.json
 
 # Generated Phase 2 demonstration manifests and local outputs
 /artifacts/phase2/
+/artifacts/phase3/
