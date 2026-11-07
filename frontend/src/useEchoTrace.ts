@@ -21,7 +21,7 @@ function sessionOf(id: string): string {
   return i >= 0 ? id.slice(0, i + 1) : "";
 }
 
-function reducer(state: State, action: Action): State {
+export function reducer(state: State, action: Action): State {
   if (action.kind === "clear") return { ...EMPTY, status: state.status, frame: state.frame, now: state.now };
   const { msg } = action;
   let s = state;
@@ -44,15 +44,36 @@ function reducer(state: State, action: Action): State {
       const events = [...others, msg.data].sort((a, b) => a.t_start - b.t_start).slice(-MAX_EVENTS);
       return { ...s, events, now };
     }
-    case "sequence":
-      return { ...s, sequences: { ...s.sequences, [msg.data.id]: msg.data }, now };
+    case "sequence": {
+      const entries = Object.values({ ...s.sequences, [msg.data.id]: msg.data }).sort((a,b)=>b.t-a.t).slice(0,MAX_EVENTS);
+      return { ...s, sequences: Object.fromEntries(entries.map(row=>[row.id,row])), now };
+    }
   }
   return s;
 }
 
-function wsUrl(): string {
+export function wsUrl(): string {
   const proto = window.location.protocol === "https:" ? "wss" : "ws";
   return `${proto}://${window.location.host}/ws`;
+}
+
+/** Reject malformed frames before they reach React state. */
+export function isMessage(value: unknown): value is Message {
+  if (!value || typeof value !== 'object') return false;
+  const msg = value as { type?: string; data?: Record<string, unknown> };
+  const d = msg.data;
+  if (!d || !['LIVE','RECORDED','SIMULATED'].includes(String(d.source)) ||
+      typeof d.t !== 'number' || !Number.isFinite(d.t) || typeof d.wall !== 'string') return false;
+  if (msg.type === 'event') return typeof d.id === 'string' && typeof d.category === 'string' &&
+      typeof d.t_start === 'number' && typeof d.t_end === 'number' &&
+      typeof d.confidence === 'number' && Number.isFinite(d.confidence) &&
+      ['LEFT','CENTRE','RIGHT','UNKNOWN'].includes(String(d.zone));
+  if (msg.type === 'sequence') return typeof d.id === 'string' && Array.isArray(d.event_ids) &&
+      Array.isArray(d.trajectory) && Array.isArray(d.explanation) && typeof d.summary === 'string' &&
+      ['GREEN','AMBER','RED'].includes(String(d.risk));
+  if (msg.type === 'frame') return Array.isArray(d.top) && Array.isArray(d.rms_db) && !!d.categories;
+  if (msg.type === 'status') return typeof d.latency_ms === 'number' && typeof d.dropped_blocks === 'number';
+  return false;
 }
 
 /** WebSocket connection to the EchoTrace backend with auto-reconnect and the dashboard state. */
@@ -60,6 +81,7 @@ export function useEchoTrace() {
   const [state, dispatch] = useReducer(reducer, EMPTY);
   const [connection, setConnection] = useState<Connection>("connecting");
   const retry = useRef(0);
+  const receivedAt = useRef<number | null>(null);
 
   useEffect(() => {
     let ws: WebSocket | null = null;
@@ -75,7 +97,8 @@ export function useEchoTrace() {
       };
       ws.onmessage = (ev) => {
         try {
-          dispatch({ kind: "msg", msg: JSON.parse(ev.data) as Message });
+          const msg: unknown = JSON.parse(ev.data);
+          if (isMessage(msg)) { receivedAt.current = Date.now(); dispatch({ kind: "msg", msg }); }
         } catch {
           /* ignore malformed */
         }
@@ -97,5 +120,5 @@ export function useEchoTrace() {
   }, []);
 
   const clear = useCallback(() => dispatch({ kind: "clear" }), []);
-  return { state, connection, clear };
+  return { state, connection, clear, lastReceived: receivedAt.current };
 }

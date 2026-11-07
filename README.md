@@ -31,3 +31,15 @@ Phase 2 streaming analytics: [Spark setup, recovery, tests and demonstrations](b
 
 Phase 3: [historical Spark SQL analytics and reproducible benchmarks](bda/PHASE3.md),
 with [executed validation and measured results](bda/PHASE3_VALIDATION.md).
+
+Phase 4: [Analytics Command Center architecture and limitations](bda/PHASE4.md),
+[professor demonstration](bda/analytics/DEMO.md), [analytics API](bda/analytics/API.md),
+and [executed validation](bda/PHASE4_VALIDATION.md).
+
+Weight-free dashboard demonstration (Python, Node and audio system libraries required):
+
+```bash
+infrastructure/dashboard/run.sh setup
+infrastructure/dashboard/run.sh serve
+# Open http://127.0.0.1:8000/
+```

@@ -1,0 +1,33 @@
+{
+  "method": "ASGI transport; sequential local requests; first excluded; OS cache uncontrolled; no network timing",
+  "results": {
+    "overview": {
+      "median_ms": 101.33544149994123,
+      "max_ms": 145.73475499992128,
+      "payload_bytes": 735,
+      "samples": 10,
+      "warmup_excluded": 1
+    },
+    "historical?dimension=hour": {
+      "median_ms": 43.070916500028034,
+      "max_ms": 82.6351790001354,
+      "payload_bytes": 13987,
+      "samples": 10,
+      "warmup_excluded": 1
+    },
+    "anomalies?limit=20": {
+      "median_ms": 1.596315499909906,
+      "max_ms": 1.6822010002215393,
+      "payload_bytes": 8237,
+      "samples": 10,
+      "warmup_excluded": 1
+    },
+    "benchmarks": {
+      "median_ms": 1.0836485000709217,
+      "max_ms": 1.2822240000787133,
+      "payload_bytes": 28509,
+      "samples": 10,
+      "warmup_excluded": 1
+    }
+  }
+}
