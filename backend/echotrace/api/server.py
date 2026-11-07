@@ -17,9 +17,10 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import threading
 import time
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from datetime import datetime
 from pathlib import Path
 
@@ -96,6 +97,7 @@ class Engine:
         self.error: str | None = None
         self._switch_lock = threading.RLock()          # re-entrant: a failed switch restores the previous mode
         self.started_wall = datetime.now()
+        self.analytics = None
 
     # ----------------------------------------------------------------- tagger
     def load_tagger(self):
@@ -197,6 +199,14 @@ class Engine:
             gen, msg, capture = await self.queue.get()
             if gen != self.generation:
                 continue                               # stale message from a source we switched away from
+            # Never wait on the switch lock: source changes run on another thread.
+            if (self.analytics is not None and msg["type"] == "event"
+                    and self._switch_lock.acquire(blocking=False)):
+                try:
+                    if gen == self.generation:
+                        self.analytics.submit(msg, gen)
+                finally:
+                    self._switch_lock.release()
             text = json.dumps(msg)
             # latency = capture -> WS send; recorded as the send starts, so a client that has the event
             # never sees a status/REST answer that predates it
@@ -287,6 +297,15 @@ def create_app(engine: Engine | None = None, initial: dict | None = None) -> Fas
     async def lifespan(app: FastAPI):
         engine.loop = asyncio.get_running_loop()
         engine.queue = asyncio.Queue()
+        try:
+            from bda.config import KafkaSettings
+            from bda.producer import EventProducer
+            engine.analytics = EventProducer(KafkaSettings.from_env(),
+                                             is_current=lambda gen: gen == engine.generation)
+            engine.analytics.start()
+        except Exception:
+            logging.getLogger(__name__).exception("Kafka analytics unavailable; EchoTrace continues")
+            engine.analytics = None
         task = asyncio.create_task(engine.broadcaster())
         if engine.tagger_factory is None:
             engine.preload_tagger()
@@ -302,12 +321,17 @@ def create_app(engine: Engine | None = None, initial: dict | None = None) -> Fas
                     engine.switch("SIMULATED")
                     engine.error = f"{want} unavailable at startup: {e}"
 
-        threading.Thread(target=start_initial, name="initial-mode", daemon=True).start()
+        initial_task = asyncio.create_task(asyncio.to_thread(start_initial))
         try:
             yield
         finally:
-            task.cancel()
+            await initial_task
             await asyncio.to_thread(engine.stop)
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
+            if engine.analytics is not None:
+                await asyncio.to_thread(engine.analytics.close)
 
     app = FastAPI(title="EchoTrace", version="0.1.0", lifespan=lifespan)
     app.state.engine = engine
