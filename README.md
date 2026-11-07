@@ -23,3 +23,6 @@ backend\.venv\Scripts\python.exe backend\scripts\list_devices.py
 ## Licence and attribution
 
 Code: MIT. Model weights: PANNs CNN14 (Kong et al., 2020), CC BY 4.0, downloaded from Zenodo; not included in this repo.
+
+Kafka analytics integration, schema semantics, setup, tests, and delivery limits:
+[BDA Phase 1 guide](bda/README.md).
