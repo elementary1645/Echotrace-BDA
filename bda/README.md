@@ -188,3 +188,11 @@ anomalies, Docker runtime, tests and demonstrations are documented in
 [PHASE2.md](PHASE2.md). Actual executed results are in
 [PHASE2_VALIDATION.md](PHASE2_VALIDATION.md). Phase 1 behavior remains optional and
 its delivery/timestamp limitations above still apply.
+
+## Phase 3
+
+[Historical dataset engineering and benchmarks](PHASE3.md) adds deterministic
+synthetic datasets, an immutable Parquet lake, twelve historical SQL interfaces,
+and independently checked Spark/Python campaigns. See
+[actual Phase 3 validation and performance results](PHASE3_VALIDATION.md).
+Batch commands never require Kafka service recreation.

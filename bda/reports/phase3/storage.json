@@ -1,0 +1,20 @@
+{
+  "lake-100k": {
+    "build_seconds": null,
+    "dataset_id": "22a52e6d117aca0478238e99a4962f561d6d3f7773305435671edcbeedcd5a93",
+    "output_bytes": 11647847,
+    "validated_bytes": 11390571,
+    "validated_count": 100000,
+    "validated_output_bytes_per_second": null,
+    "validation_write_seconds": null
+  },
+  "lake-1m-retry": {
+    "build_seconds": 230.68616459900022,
+    "dataset_id": "5a393bae3c6ca42deafb9aa6875b253da63fcf18634e350579d7c9b9d1c36fc1",
+    "output_bytes": 113322842,
+    "validated_bytes": 113032004,
+    "validated_count": 1000000,
+    "validated_output_bytes_per_second": 551788.316051126,
+    "validation_write_seconds": 204.84667890199944
+  }
+}

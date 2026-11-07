@@ -1,0 +1,380 @@
+{
+  "100k-local1-p2-s2": {
+    "3d7bd6f5b6c544fbb7c8319208eebb11": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 558870808,
+      "executor_run_ms": 659,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    },
+    "541e7e57a4ba47b2922bbe05113b7390": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 2405689063,
+      "executor_run_ms": 3565,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    },
+    "b0df8cf42d7949b2b69fba83aa6ac9f5": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 739792621,
+      "executor_run_ms": 996,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    },
+    "f66a16d86fd8467195fb8f75da11a2c1": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 634879825,
+      "executor_run_ms": 750,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    }
+  },
+  "100k-local2-p2-s2": {
+    "5220809a259848158a451f50b759f2b3": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 776736184,
+      "executor_run_ms": 2575,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    },
+    "6739f85c15cb4ba6b760566f56fa4469": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 635606989,
+      "executor_run_ms": 1010,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    },
+    "ae4b04417874452fbf8fa98ff424037e": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 1196217253,
+      "executor_run_ms": 4326,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    },
+    "fc4656c6a8a849ee8c76a238294d84fd": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 3382080820,
+      "executor_run_ms": 7252,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 9457,
+      "shuffle_write_bytes": 9457,
+      "tasks": 4
+    }
+  },
+  "100k-local2-p2-s4": {
+    "14f99c6a020746aea924d916fab34000": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 755985068,
+      "executor_run_ms": 1375,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 10456,
+      "shuffle_write_bytes": 10456,
+      "tasks": 6
+    },
+    "457a55b1dfe444f8a8bca68df07ee1b5": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 801012048,
+      "executor_run_ms": 2448,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 10456,
+      "shuffle_write_bytes": 10456,
+      "tasks": 6
+    },
+    "eafa9f1f335b45599ed93dbd7fbdbe51": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 1445773538,
+      "executor_run_ms": 2609,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 10456,
+      "shuffle_write_bytes": 10456,
+      "tasks": 6
+    },
+    "f5b65e0120f84df8bef13dad947891c4": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 3711250286,
+      "executor_run_ms": 9392,
+      "input_bytes": 48367606,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 10456,
+      "shuffle_write_bytes": 10456,
+      "tasks": 6
+    }
+  },
+  "100k-local2-p4-s4": {
+    "1bd284d86d9e4e43bc6c2b73ccecfbb8": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 830129053,
+      "executor_run_ms": 3025,
+      "input_bytes": 48628731,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 20609,
+      "shuffle_write_bytes": 20609,
+      "tasks": 8
+    },
+    "6f09ac0300c246e6a6156e8fffd9266c": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 1132927493,
+      "executor_run_ms": 2763,
+      "input_bytes": 48628731,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 20609,
+      "shuffle_write_bytes": 20609,
+      "tasks": 8
+    },
+    "c33a263b08c1404896eeee19ee82fe24": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 3523941211,
+      "executor_run_ms": 8259,
+      "input_bytes": 48628731,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 20609,
+      "shuffle_write_bytes": 20609,
+      "tasks": 8
+    },
+    "d751404a4c3c41a0aa3c10b3aa299d35": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 752746904,
+      "executor_run_ms": 1201,
+      "input_bytes": 48628731,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 20609,
+      "shuffle_write_bytes": 20609,
+      "tasks": 8
+    }
+  },
+  "1m-local1-p2-s2": {
+    "156f5132e8d44725b6f2965e3d1a8f32": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 5068484649,
+      "executor_run_ms": 6774,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    },
+    "64c305a8719a47bb9d2f90736f943910": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 4926647588,
+      "executor_run_ms": 5487,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    },
+    "e174e584483b4a2d8ea90f00fa13fe75": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6647556274,
+      "executor_run_ms": 7987,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    },
+    "f755269c048349f6aab9faf3071cfc8d": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 5338781860,
+      "executor_run_ms": 6217,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    }
+  },
+  "1m-local2-p2-s2": {
+    "0e7e6bb933c3423cb3427136e2ba44e7": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6092502170,
+      "executor_run_ms": 7726,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    },
+    "5d0d5c8d8f1547d5baee1a5f76ea7b72": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6257500230,
+      "executor_run_ms": 10732,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    },
+    "6c7423ce86fc463990a7bf6d26ab8056": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6328736691,
+      "executor_run_ms": 10690,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    },
+    "bc15bf0db80d4d378929d9620a8ceaeb": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 8736604122,
+      "executor_run_ms": 16668,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 14536,
+      "shuffle_write_bytes": 14536,
+      "tasks": 5
+    }
+  },
+  "1m-local2-p2-s4": {
+    "31930ba777a945ad8cca37782ef02b04": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6293626744,
+      "executor_run_ms": 13997,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 15863,
+      "shuffle_write_bytes": 15863,
+      "tasks": 7
+    },
+    "bce38dc13aa44506b06f57c16d848228": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 9756114457,
+      "executor_run_ms": 21972,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 15863,
+      "shuffle_write_bytes": 15863,
+      "tasks": 7
+    },
+    "c215ba11312c4f80be4827175a0d010e": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 5953935442,
+      "executor_run_ms": 7267,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 15863,
+      "shuffle_write_bytes": 15863,
+      "tasks": 7
+    },
+    "d75e5d5471b949478ec341615c74f538": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 5956363217,
+      "executor_run_ms": 7376,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 15863,
+      "shuffle_write_bytes": 15863,
+      "tasks": 7
+    }
+  },
+  "1m-local2-p4-s4": {
+    "17f236d60fe441cd944dc709a2c7b80f": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 10851018705,
+      "executor_run_ms": 22212,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26653,
+      "shuffle_write_bytes": 26653,
+      "tasks": 9
+    },
+    "2493934bc4d3418189145aee5f1645f5": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6617002404,
+      "executor_run_ms": 11282,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26653,
+      "shuffle_write_bytes": 26653,
+      "tasks": 9
+    },
+    "81b259acb50544c59388f13201893d7c": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6669263704,
+      "executor_run_ms": 9550,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26653,
+      "shuffle_write_bytes": 26653,
+      "tasks": 9
+    },
+    "e62309a4fe884a089346cfcaa857b215": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 6773407269,
+      "executor_run_ms": 10632,
+      "input_bytes": 482385125,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26653,
+      "shuffle_write_bytes": 26653,
+      "tasks": 9
+    }
+  },
+  "5m-local2-p4-s4": {
+    "01ec656bd47d4340b8c15c4c6ce70610": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 38618381740,
+      "executor_run_ms": 78246,
+      "input_bytes": 2411926657,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26587,
+      "shuffle_write_bytes": 26587,
+      "tasks": 59
+    },
+    "2a3cd7fc0f2a49a29a1ae77d0273f9d9": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 35062124415,
+      "executor_run_ms": 62596,
+      "input_bytes": 2411926657,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26587,
+      "shuffle_write_bytes": 26587,
+      "tasks": 59
+    },
+    "3fa3e336c933429b849915aaf6854115": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 35111656118,
+      "executor_run_ms": 61754,
+      "input_bytes": 2411926657,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26587,
+      "shuffle_write_bytes": 26587,
+      "tasks": 59
+    },
+    "82e305e741fa4f549d82a394e4ba1a17": {
+      "disk_spilled_bytes": 0,
+      "executor_cpu_ns": 35852526115,
+      "executor_run_ms": 67054,
+      "input_bytes": 2411926657,
+      "memory_spilled_bytes": 0,
+      "shuffle_read_bytes": 26587,
+      "shuffle_write_bytes": 26587,
+      "tasks": 59
+    }
+  }
+}

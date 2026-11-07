@@ -1,0 +1,1 @@
+{"fields":[{"metadata":{},"name":"hour","nullable":true,"type":"timestamp"},{"metadata":{},"name":"event_count","nullable":false,"type":"long"}],"type":"struct"}
