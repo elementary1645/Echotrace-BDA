@@ -6,7 +6,7 @@ test('real API overview, filters, benchmark and original monitor', async ({page}
   await expect(page.getByRole('heading',{name:'Overview',exact:true})).toBeVisible();
   await expect(page.getByText('100,000',{exact:true})).toBeVisible();
   await expect(page.getByText('SIMULATED · synthetic',{exact:true})).toBeVisible();
-  await page.screenshot({path:'../bda/reports/phase4/overview-desktop.png',fullPage:true});
+  await page.screenshot({path:'../bda/reports/phase5/overview-desktop.png',fullPage:true});
   await page.getByRole('link',{name:'Historical Analytics'}).click();
   await expect(page.getByText('100,000 events in selection')).toBeVisible();
   await page.getByLabel('Until (exclusive, UTC)').fill('2026-01-03');
@@ -32,7 +32,7 @@ test('mobile navigation and no page overflow',async({page})=>{
   await page.goto('/');
   await expect(page.getByText('100,000',{exact:true})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-  await page.screenshot({path:'../bda/reports/phase4/overview-mobile.png',fullPage:true});
+  await page.screenshot({path:'../bda/reports/phase5/overview-mobile.png',fullPage:true});
   await page.getByRole('link',{name:'Historical Analytics'}).click();
   await expect(page.getByLabel('From (UTC)')).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
@@ -43,4 +43,33 @@ test('HTTP failure has a retry state',async({page})=>{
   await page.goto('/');
   await expect(page.getByRole('alert')).toContainText('Historical export unavailable');
   await expect(page.getByRole('button',{name:'Retry'})).toBeVisible();
+});
+
+test('API connectivity loss and restoration recovers on Retry',async({page,context})=>{
+  await page.goto('/#5');
+  await expect(page.getByRole('heading',{name:'Pipeline observability'})).toBeVisible();
+  await context.setOffline(true);
+  await page.getByRole('button',{name:/Refresh/}).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  await context.setOffline(false);
+  await page.getByRole('button',{name:'Retry'}).click();
+  await expect(page.getByRole('heading',{name:'Pipeline observability'})).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+test('workspace navigation and filters support keyboard activation',async({page})=>{
+  await page.goto('/');
+  await page.getByRole('link',{name:/ECHOTRACE/}).focus();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link',{name:/Overview/})).toBeFocused();
+  await page.getByRole('link',{name:'Historical Analytics'}).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByLabel('From (UTC)')).toBeVisible();
+  await expect(page.getByLabel('Category',{exact:true})).toContainText('ALARM');
+  await page.getByLabel('Category',{exact:true}).focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.getByLabel('Category',{exact:true})).toHaveValue('ALARM');
+  await expect(page.getByText(/5,987 events in selection/)).toBeVisible();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button',{name:'Switch to daily'})).toBeFocused();
 });

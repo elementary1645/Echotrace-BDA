@@ -3,6 +3,9 @@ import json
 import logging
 import queue
 import threading
+import time
+from datetime import datetime, timezone
+from collections import deque
 from collections import Counter
 
 from bda.event_adapter import adapt_event
@@ -22,16 +25,36 @@ class EventProducer:
         self.lock = threading.Lock()
         self.metrics = Counter()
         self.accepting = False
+        self.last_ack_at = None
+        self.last_error_at = None
+        self.last_ack_monotonic = None
+        self.last_error_monotonic = None
+        self.ack_latencies_ms = deque(maxlen=4096)
 
     def report(self, name, error=None):
         with self.lock:
             self.metrics[name] += 1
+            if error is not None:
+                self.last_error_at = datetime.now(timezone.utc).isoformat()
+                self.last_error_monotonic = time.monotonic()
         if error is not None:
             log.warning(json.dumps({"component": "bda.kafka", "metric": name, "error": str(error)}))
 
     def snapshot(self):
         with self.lock:
-            return {**self.metrics, "queue_depth": self.queue.qsize(), "accepting": self.accepting}
+            return {**self.metrics, "queue_depth": self.queue.qsize(), "accepting": self.accepting,
+                    "worker_alive": bool(self.thread and self.thread.is_alive()),
+                    "last_ack_at": self.last_ack_at,"last_error_at": self.last_error_at,
+                    "connectivity": self._connectivity()}
+
+    def _connectivity(self):
+        if not self.accepting:
+            return 'stopped'
+        if self.last_error_monotonic is not None and (self.last_ack_monotonic is None or self.last_error_monotonic>self.last_ack_monotonic):
+            return 'errors observed; connectivity unverified'
+        if self.last_ack_monotonic is not None:
+            return 'recent acknowledgement' if time.monotonic()-self.last_ack_monotonic<=30 else 'acknowledgement stale'
+        return 'accepting; connectivity unverified'
 
     def start(self):
         if self.thread is not None or not self.settings.enabled:
@@ -52,7 +75,7 @@ class EventProducer:
             self.report("invalid", exc)
             return False
         try:
-            self.queue.put_nowait((generation, record["record_id"].encode(), payload))
+            self.queue.put_nowait((generation, record["record_id"].encode(), payload, time.monotonic()))
             self.report("enqueued")
             return True
         except queue.Full:
@@ -73,7 +96,7 @@ class EventProducer:
                                 "error_cb": lambda e: self.report("broker_errors", e)})
             while not self.stop_event.is_set() or not self.queue.empty():
                 try:
-                    generation, key, payload = self.queue.get(timeout=0.05)
+                    generation, key, payload, created = self.queue.get(timeout=0.05)
                 except queue.Empty:
                     producer.poll(0)
                     continue
@@ -81,7 +104,7 @@ class EventProducer:
                     if not self.is_current(generation):
                         self.report("dropped_stale")
                         continue
-                    producer.produce(self.settings.topic, key=key, value=payload, on_delivery=self._delivered)
+                    producer.produce(self.settings.topic, key=key, value=payload, on_delivery=lambda error,message,start=created: self._delivered(error,message,start))
                     self.report("submitted")
                 except Exception as exc:
                     self.report("send_failed", exc)
@@ -101,7 +124,13 @@ class EventProducer:
                     self.report("flush_failed", exc)
             log.info(json.dumps({"component": "bda.kafka", "metrics": self.snapshot()}))
 
-    def _delivered(self, error, message):
+    def _delivered(self, error, message, created=None):
+        if not error:
+            with self.lock:
+                self.last_ack_at = datetime.now(timezone.utc).isoformat()
+                self.last_ack_monotonic = time.monotonic()
+                if created is not None:
+                    self.ack_latencies_ms.append((self.last_ack_monotonic-created)*1000)
         self.report("delivery_failed" if error else "delivered", error)
 
     def close(self):

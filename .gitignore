@@ -37,3 +37,4 @@ backend/calibration.json
 !bda/reports/phase4/history.sqlite
 /frontend/test-results/
 /frontend/playwright-report/
+/artifacts/phase5/

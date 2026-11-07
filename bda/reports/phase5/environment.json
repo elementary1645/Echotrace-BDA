@@ -1,0 +1,18 @@
+{
+  "host_python": "3.14.2",
+  "platform": "Linux-6.8.0-1064-azure-x86_64-with-glibc2.39",
+  "spark": "4.0.1",
+  "spark_python": "3.10.12",
+  "spark_java": "17.0.18",
+  "topology": "local[2]",
+  "spark_cpu_quota": 2,
+  "spark_memory_bytes": 3221225472,
+  "spark_heap": "1g",
+  "broker": "Kafka 4.1.2; one broker; one CPU quota; 1 GiB limit; 256 MiB heap",
+  "preflight": {
+    "disk_free_bytes": 8456609792,
+    "available_memory_bytes": 5420576768
+  },
+  "producer_workload": "100 events/s; 15 s warmup, 60 s measured",
+  "limitations": "No multi-machine scale or full concurrent downstream throughput claim"
+}

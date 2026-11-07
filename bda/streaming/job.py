@@ -2,6 +2,7 @@
 import argparse
 import json
 import signal
+import threading
 from pathlib import Path
 from pyspark.sql import SparkSession
 from bda.streaming.transforms import classify, events, aggregate, anomalies, CLASSIFIED, EVENT_OUTPUT, WINDOW_OUTPUT
@@ -14,6 +15,7 @@ def main():
     p.add_argument('--topic', default='echotrace.events.v1')
     p.add_argument('--stage', choices=['ingest','events','windows','anomalies','all'], default='all')
     p.add_argument('--continuous', action='store_true')
+    p.add_argument('--stop-file',help='Operator stop marker within this root; graceful continuous-query shutdown')
     p.add_argument('--watermark', default='2 minutes')
     p.add_argument('--window', default='1 minute')
     p.add_argument('--parallelism', type=int, default=2)
@@ -30,6 +32,8 @@ def main():
         p.error('parallelism, offsets, history and retention must be positive')
     root = Path(args.root)
     root.mkdir(parents=True, exist_ok=True)
+    if args.stop_file and (not args.continuous or Path(args.stop_file).resolve().parent!=root.resolve()):
+        p.error('stop-file requires continuous mode and a marker directly inside the query root')
     from bda.streaming.storage import claim
     locks = claim(root, args.stage, {k:getattr(args,k) for k in
         ('brokers','topic','watermark','window','parallelism')})
@@ -45,6 +49,13 @@ def main():
             query.stop()
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
+    watcher_stop=threading.Event()
+    def watch():
+        while not watcher_stop.wait(.5):
+            if args.stop_file and Path(args.stop_file).exists():
+                stop();return
+    watcher=threading.Thread(target=watch,daemon=True)
+    if args.stop_file: watcher.start()
 
     def run(df, name, partitions=()):
         writer = (df.writeStream.format('parquet').outputMode('append')
@@ -93,7 +104,11 @@ def main():
             for expired in snapshots[args.snapshot_retention:]:
                 shutil.rmtree(expired)
     finally:
+        watcher_stop.set()
+        if args.stop_file: watcher.join(timeout=2)
         stop()
+        spark.streams.removeListener(listener)
+        listener.telemetry.close()
         spark.stop()
         for handle in locks:
             handle.close()

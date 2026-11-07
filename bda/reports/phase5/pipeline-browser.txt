@@ -1,0 +1,13 @@
+
+> echotrace-dashboard@0.1.0 test:e2e
+> playwright test e2e/phase5.spec.ts
+
+
+Running 1 test using 1 worker
+
+(node:155368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"boundary":"API response received to exact row visible; one browser observation","milliseconds":173.00235299999986,"population":1,"navigation_to_visible_ms":633.4348679999998}
+  ✓  1 e2e/phase5.spec.ts:3:1 › isolated pipeline output is served and presented with exact provenance (1.9s)
+
+  1 passed (4.1s)

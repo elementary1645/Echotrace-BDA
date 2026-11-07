@@ -1,0 +1,12 @@
+{
+  "spark": {
+    "samples": 51,
+    "max_sampled_memory_bytes": 1083405500.416,
+    "max_sampled_cpu_percent": 172.5
+  },
+  "kafka": {
+    "samples": 58,
+    "max_sampled_memory_bytes": 484022681.6,
+    "max_sampled_cpu_percent": 103.25
+  }
+}
