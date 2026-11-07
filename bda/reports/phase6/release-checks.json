@@ -1,0 +1,141 @@
+{
+  "phase": "6 academic delivery",
+  "baseline": "33ce36e",
+  "claims_source": "Committed Phase 1-5 reports; no large benchmark or fresh Kafka/Spark end-to-end rerun",
+  "python_regression": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 269,
+    "skipped": 16,
+    "seconds": 16.5
+  },
+  "streaming_regression": {
+    "runtime": "pinned Spark 4.0.1 container; read-only repository, no application volumes",
+    "passed": 19,
+    "skipped": 1,
+    "seconds": 59.55
+  },
+  "batch_regression": {
+    "command": "infrastructure/batch/run.sh test",
+    "passed": 20,
+    "seconds": 59.78
+  },
+  "frontend": {
+    "tests_passed": 8,
+    "production_build": "passed",
+    "main_js_kb": 168.4,
+    "main_js_gzip_kb": 54.93
+  },
+  "documentation": {
+    "documents": 32,
+    "local_links": 388,
+    "bash_blocks": 66,
+    "python_blocks": 0,
+    "mermaid_blocks": 9,
+    "evidence": {
+      "recorded_trials": 72,
+      "measured_trials": 54,
+      "warmups": 18,
+      "five_million_medians_seconds": {
+        "python": 70.68902700700073,
+        "spark": 32.70021507800084
+      },
+      "dashboard_events": 100000,
+      "historical_lake_events": 1000000,
+      "viva_questions": 36,
+      "slides": 12
+    },
+    "errors": []
+  },
+  "mermaid": {
+    "parser_version": "11.12.0",
+    "dependency_scope": "temporary external directory; not an app dependency",
+    "mermaid_syntax_checks": 9,
+    "checks": [
+      {
+        "file": "README.md",
+        "block": 1,
+        "status": "passed"
+      },
+      {
+        "file": "bda/PHASE4.md",
+        "block": 1,
+        "status": "passed"
+      },
+      {
+        "file": "docs/academic/ARCHITECTURE.md",
+        "block": 1,
+        "status": "passed"
+      },
+      {
+        "file": "docs/academic/ARCHITECTURE.md",
+        "block": 2,
+        "status": "passed"
+      },
+      {
+        "file": "docs/academic/ARCHITECTURE.md",
+        "block": 3,
+        "status": "passed"
+      },
+      {
+        "file": "docs/academic/ARCHITECTURE.md",
+        "block": 4,
+        "status": "passed"
+      },
+      {
+        "file": "docs/academic/ARCHITECTURE.md",
+        "block": 5,
+        "status": "passed"
+      },
+      {
+        "file": "docs/academic/ARCHITECTURE.md",
+        "block": 6,
+        "status": "passed"
+      },
+      {
+        "file": "docs/academic/PROJECT_REPORT.md",
+        "block": 1,
+        "status": "passed"
+      }
+    ]
+  },
+  "fallback_browser": {
+    "status": "passed",
+    "mode": "current acoustic SIMULATED; committed historical fallback; Kafka disabled",
+    "overview_events": 100000,
+    "historical_filtered_events": 28426,
+    "original_monitor": "visible",
+    "page_errors": []
+  },
+  "read_only_preflight": {
+    "disk_free_bytes": 8236818432,
+    "available_memory_bytes": 4103823360,
+    "echotrace-spark:4.0.1": "sha256:f78e5e07269002e615621537cb1fde9e9b87baa1efd28df440c49305a48d1361",
+    "apache/kafka:4.1.2": "sha256:5cc2a2fd93fa2687b44015eee04fb2c3edd9e526bd64bf8bec5ff1e268772e0e"
+  },
+  "command_checks": {
+    "host_cli_help": [
+      "bda.reliability.run",
+      "bda.reliability.presentation",
+      "bda.analytics.demo",
+      "backend/scripts/serve.py"
+    ],
+    "container_cli_help": [
+      "bda/streaming/job.py",
+      "bda/batch/lake.py"
+    ],
+    "actual_shell_syntax": [
+      "infrastructure/dashboard/run.sh",
+      "infrastructure/reliability/run.sh",
+      "infrastructure/spark/run.sh",
+      "infrastructure/batch/run.sh"
+    ]
+  },
+  "not_executed": [
+    "5m benchmark regeneration",
+    "fresh Kafka/Spark end-to-end campaign",
+    "neural inference",
+    "Windows microphone setup"
+  ],
+  "preserved": "Historical Phase 1-5 validation and measurements; existing broker, datasets, volumes and checkpoints",
+  "workspace_note": "Separate newline-only frontend/index.html edit is excluded from documentation commits"
+}
