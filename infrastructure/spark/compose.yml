@@ -1,0 +1,28 @@
+# Merge with the existing Kafka compose; preserves its project and kafka-data volume.
+services:
+  kafka:
+    environment:
+      KAFKA_LISTENERS: PLAINTEXT://:9092,INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+  spark:
+    build:
+      context: ../spark
+    image: echotrace-spark:4.0.1
+    # local[2] is a deliberate single-host topology for a memory-constrained Codespace.
+    entrypoint: ["/opt/spark/bin/spark-submit"]
+    command: ["--master", "local[2]", "--driver-memory", "1g", "--conf", "spark.jars.ivy=/opt/spark/.ivy2", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1", "/workspace/bda/streaming/job.py"]
+    environment:
+      SPARK_LOCAL_IP: 127.0.0.1
+    volumes:
+      - ../../:/workspace:ro
+      - spark-data:/data
+      - spark-ivy:/opt/spark/.ivy2
+    cpus: 2
+    mem_limit: 3g
+    depends_on:
+      kafka:
+        condition: service_healthy
+volumes:
+  spark-data:
+  spark-ivy:
