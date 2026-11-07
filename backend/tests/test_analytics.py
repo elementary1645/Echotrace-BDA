@@ -121,3 +121,24 @@ def test_provenance_schema_rejects_contradiction(client,monkeypatch,tmp_path):
 
 def test_offset_hour_is_not_silently_rounded(client):
     assert request(client,'historical?start=2026-01-01T00:00:00%2B05:30').status_code==422
+
+
+def test_empty_export_and_restore(client,monkeypatch,tmp_path):
+    original=analytics.DATABASE
+    target=tmp_path/'empty.sqlite'
+    source=sqlite3.connect(original);dest=sqlite3.connect(target);source.backup(dest);source.close()
+    dest.execute('DELETE FROM cells');dest.execute('DELETE FROM anomalies');dest.execute("UPDATE metadata SET value='0' WHERE key='event_count'");dest.commit();dest.close()
+    monkeypatch.setattr(analytics,'DATABASE',target)
+    row=request(client,'overview').json()['rows'][0]
+    assert row['event_count']==0 and row['avg_confidence'] is None and row['categories']==[]
+    moved=tmp_path/'temporarily-unavailable.sqlite';target.rename(moved)
+    assert request(client,'overview').status_code==503
+    moved.rename(target)
+    assert request(client,'overview').status_code==200
+
+
+def test_health_does_not_expose_configured_paths(client,monkeypatch,tmp_path):
+    monkeypatch.setenv('BDA_TELEMETRY_ROOT',str(tmp_path/'private-location'))
+    body=request(client,'health').json()
+    assert str(tmp_path) not in json.dumps(body)
+    assert body['spark']['state']=='unavailable'

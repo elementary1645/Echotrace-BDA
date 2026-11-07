@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from functools import lru_cache
 import json
 import math
+import os
 from pathlib import Path
 import sqlite3
 import time
@@ -16,6 +17,12 @@ from echotrace import config
 
 REPORTS = config.REPO_DIR / 'bda/reports/phase3'
 DATABASE = config.REPO_DIR / 'bda/reports/phase4/history.sqlite'
+
+def history_path():
+    return Path(os.environ.get('BDA_HISTORY_DATABASE',str(DATABASE))).resolve()
+
+def streaming_path():
+    return Path(os.environ.get('BDA_STREAMING_DATABASE',str(config.REPO_DIR/'artifacts/phase3/streaming.sqlite'))).resolve()
 
 
 class Filters(BaseModel):
@@ -101,11 +108,12 @@ class HealthResponse(BaseModel):
     kafka: dict
     spark: dict
     historical_export: Literal['available','unavailable']
+    analytical_output: dict
 
 
 @contextmanager
 def database(path=None):
-    path = path or DATABASE
+    path = path or history_path()
     if not path.is_file():
         raise HTTPException(503, 'Historical export unavailable; run the documented offline export')
     db = None
@@ -153,7 +161,7 @@ def router(engine):
     @api.get('/overview', response_model=Envelope)
     def overview():
         with database() as db:
-            row = dict(db.execute('''SELECT sum(event_count) AS event_count,
+            row = dict(db.execute('''SELECT coalesce(sum(event_count),0) AS event_count,
                 count(DISTINCT source_id) AS sources,min(hour) AS start,max(hour) AS last_hour,
                 sum(confidence_sum)/sum(event_count) AS avg_confidence FROM cells''').fetchone())
             row['anomalies'] = db.execute('SELECT count(*) FROM anomalies').fetchone()[0]
@@ -185,10 +193,11 @@ def router(engine):
         with database() as db:
             total = db.execute('SELECT count(*) FROM anomalies'+where,values).fetchone()[0]
             rows = [dict(r) for r in db.execute('SELECT * FROM anomalies'+where+' ORDER BY hour DESC,source_id,category LIMIT ? OFFSET ?', values+[limit,offset])]
-            threshold = metadata(db).threshold
+            meta = metadata(db)
+            threshold = meta.threshold
             for row in rows:
-                row['explanation'] = '; '.join(filter(None,[f'count >= {threshold}' if row['threshold_exceeded'] else '',
-                    'increase above prior observed-window baseline; z >= 3 or constant baseline' if row['baseline_exceeded'] else '']))
+                row['explanation'] = '; '.join(filter(None,[(f'count >= {threshold}' if threshold is not None else 'Spark absolute-threshold flag set; threshold not recorded') if row['threshold_exceeded'] else '',
+                    ('Spark baseline-exceeded flag set; policy not recorded' if meta.origin=='streaming-finalized' else 'increase above prior observed-window baseline; z >= 3 or constant baseline') if row['baseline_exceeded'] else '']))
                 row['kind'] = 'detected'
             return envelope(db,rows,total,offset,limit)
 
@@ -196,6 +205,10 @@ def router(engine):
     def ground_truth():
         try:
             manifest = json.loads((REPORTS/'datasets.json').read_text())['raw-100k']
+            with database() as db:
+                selected=metadata(db).dataset_id
+            if selected!=manifest['dataset_id']:
+                return {'schema_version':'1','origin':'Ground truth unavailable for selected snapshot','source':'unavailable','dataset_id':selected,'rows':[]}
             rows = []
             for key, value in manifest['injected_anomalies'].items():
                 hour, source_id, category = key.split('|')
@@ -208,7 +221,7 @@ def router(engine):
     @api.get('/streaming', response_model=Envelope)
     def streaming():
         # Fixed offline export location; query status remains unknown even when present.
-        with database(config.REPO_DIR / 'artifacts/phase3/streaming.sqlite') as db:
+        with database(streaming_path()) as db:
             rows = [dict(r) for r in db.execute("""SELECT hour,source,source_id,category,zone,
                 sum(event_count) AS event_count,sum(confidence_sum)/sum(event_count) AS avg_confidence
                 FROM cells GROUP BY hour,source,source_id,category,zone
@@ -223,21 +236,26 @@ def router(engine):
     def health():
         producer = engine.analytics.snapshot() if engine.analytics is not None else None
         status = engine.status_data()
-        if producer is None:
-            kafka = 'unavailable'
-        elif not producer.get('accepting'):
-            kafka = 'stopped'
-        elif any(producer.get(k,0) for k in ('worker_failed','broker_errors','delivery_failed','send_failed')):
-            kafka = 'disconnected'
-        else:
-            kafka = 'accepting; broker connectivity unverified'
+        kafka = producer.get('connectivity','unavailable') if producer else 'unavailable'
+        from bda.analytics.observability import read_telemetry
+        spark = read_telemetry()
+        def output_status(path):
+            try:
+                with database(path) as db:
+                    meta=metadata(db)
+                    return {'state':'available','exported_at':meta.exported_at,
+                            'stale':(datetime.now(timezone.utc)-meta.exported_at).total_seconds()>86400}
+            except HTTPException:
+                return {'state':'unavailable','exported_at':None,'stale':None}
+        historical=output_status(history_path())
+        streaming=output_status(streaming_path())
         # Never expose mode paths, device details, or raw error messages.
         return {'schema_version':'1','observed_at':datetime.now(timezone.utc),
                 'acoustic': 'running' if status.get('running') else 'stopped',
                 'source':status['source'],'service_error':bool(status.get('error')),
                 'dropped_blocks':status['dropped_blocks'],'kafka':{'state':kafka,'metrics':producer},
-                'spark':{'state':'unavailable','reason':'No active-query telemetry connected; historical exports do not establish query liveness'},
-                'historical_export':'available' if DATABASE.is_file() else 'unavailable'}
+                'spark':spark,'analytical_output':{'historical':historical,'streaming':streaming},
+                'historical_export':historical['state']}
 
     return api
 

@@ -48,7 +48,7 @@ def export(spark, root, output, streaming=False):
             if root.resolve() not in anomaly_path.parents:
                 raise ValueError('anomaly snapshot must belong to its configured root')
         flagged = (spark.read.parquet(str(anomaly_path)).filter('is_anomaly')
-            .select(F.date_format('window.start', "yyyy-MM-dd'T'HH':00:00Z'").alias('hour'),
+            .select(F.date_format('window.start', "yyyy-MM-dd'T'HH:mm:ss'Z'").alias('hour'),
                     'source','source_id','category','event_count','history_count','baseline_mean',
                     'baseline_stddev','z_score','threshold_exceeded','baseline_exceeded'))
         for row in flagged.toLocalIterator():
@@ -61,6 +61,9 @@ def export(spark, root, output, streaming=False):
                     threshold=None if streaming else manifest['threshold'], granularity='finalized windows' if streaming else 'hour', schema_version=1,
                     engine='Apache Spark 4.0.1', source='MIXED; inspect row source' if streaming else ('SIMULATED' if manifest['origin']=='synthetic' else 'application'))
         db.executemany('INSERT INTO metadata VALUES (?,?)', [(k,json.dumps(v)) for k,v in meta.items()])
+        # Cover the dashboard's measured category and distinct-source scans.
+        db.execute('CREATE INDEX cells_category_cover ON cells(category,event_count)')
+        db.execute('CREATE INDEX cells_source_cover ON cells(source_id)')
         db.commit()
         db.close()
         temporary.rename(output)

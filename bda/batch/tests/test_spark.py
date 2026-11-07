@@ -117,6 +117,7 @@ def test_dashboard_export(spark,tmp_path):
     export(spark,target,output)
     db=sqlite3.connect(output)
     assert db.execute('SELECT sum(event_count) FROM cells').fetchone()[0]==100
+    assert 'cells_category_cover' in {r[1] for r in db.execute("PRAGMA index_list('cells')")}
     assert dict(db.execute('SELECT category,sum(event_count) FROM cells GROUP BY category'))==meta['expected']['categories']
     assert db.execute('SELECT count(*) FROM anomalies').fetchone()[0]>0
     assert json.loads(db.execute("SELECT value FROM metadata WHERE key='source'").fetchone()[0])=='SIMULATED'
@@ -135,5 +136,6 @@ def test_dashboard_export(spark,tmp_path):
     export(spark,target,live,streaming=True)
     db=sqlite3.connect(live)
     assert db.execute('SELECT sum(event_count) FROM cells').fetchone()[0]==100
+    assert 'cells_category_cover' in {r[1] for r in db.execute("PRAGMA index_list('cells')")}
     assert json.loads(db.execute("SELECT value FROM metadata WHERE key='threshold'").fetchone()[0]) is None
     db.close()
