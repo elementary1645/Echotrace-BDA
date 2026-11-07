@@ -394,6 +394,9 @@ def create_app(engine: Engine | None = None, initial: dict | None = None) -> Fas
     async def get_metrics():
         return engine.metrics()
 
+    from echotrace.api.analytics import router as analytics_router
+    app.include_router(analytics_router(engine))
+
     @app.get("/api/{rest:path}")
     async def api_not_found(rest: str):
         return JSONResponse({"error": "Not found"}, 404)

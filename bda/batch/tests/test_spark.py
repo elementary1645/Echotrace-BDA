@@ -103,3 +103,37 @@ def test_quality_lake(spark,tmp_path):
     assert result['validated_count']==3
     assert spark.read.parquet(str(target/'quarantine')).count()==2
     assert spark.read.parquet(str(target/'validated')).filter("event_date = '2025-01-01'").count()==1
+
+
+def test_dashboard_export(spark,tmp_path):
+    import sqlite3
+    from bda.analytics.export import export
+    from bda.batch.generate import generate,Config
+    from bda.batch.lake import build
+    source,target = tmp_path/'raw-export',tmp_path/'lake-export'
+    meta=generate(source,Config(count=100,sources=2,days=2,chunk=30,anomaly_every=10))
+    build(spark,source,target,threshold=5)
+    output=tmp_path/'history.sqlite'
+    export(spark,target,output)
+    db=sqlite3.connect(output)
+    assert db.execute('SELECT sum(event_count) FROM cells').fetchone()[0]==100
+    assert dict(db.execute('SELECT category,sum(event_count) FROM cells GROUP BY category'))==meta['expected']['categories']
+    assert db.execute('SELECT count(*) FROM anomalies').fetchone()[0]>0
+    assert json.loads(db.execute("SELECT value FROM metadata WHERE key='source'").fetchone()[0])=='SIMULATED'
+    assert db.execute('SELECT sum(confidence_sum)/sum(event_count) FROM cells').fetchone()[0]>0
+    db.close()
+    with pytest.raises(ValueError,match='already exists'):
+        export(spark,target,output)
+    with pytest.raises(ValueError,match='complete'):
+        export(spark,tmp_path/'missing',tmp_path/'missing.sqlite')
+
+    from bda.streaming.transforms import aggregate
+    aggregate(spark.read.parquet(str(target/'validated')),'1 hour').write.parquet(str(target/'windows'))
+    (target/'configuration.json').write_text('{}')
+    (target/'anomalies-current').write_text(str(target/'anomalies'))
+    live=tmp_path/'streaming.sqlite'
+    export(spark,target,live,streaming=True)
+    db=sqlite3.connect(live)
+    assert db.execute('SELECT sum(event_count) FROM cells').fetchone()[0]==100
+    assert json.loads(db.execute("SELECT value FROM metadata WHERE key='threshold'").fetchone()[0]) is None
+    db.close()

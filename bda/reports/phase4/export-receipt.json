@@ -1,0 +1,14 @@
+{
+  "sha256": "d19231017e5cb4cd787a588bc85dfde0689bc52cba8092fb26123017a1805acf",
+  "bytes": 10285056,
+  "dataset_id": "22a52e6d117aca0478238e99a4962f561d6d3f7773305435671edcbeedcd5a93",
+  "events": 100000,
+  "detected_windows": 477,
+  "cells": 68160,
+  "independent_checks": [
+    "total matches manifest",
+    "all category marginals match manifest",
+    "all daily marginals match manifest"
+  ],
+  "command": "infrastructure/batch/run.sh export --input /artifacts/lake-100k --output /artifacts/dashboard.sqlite"
+}

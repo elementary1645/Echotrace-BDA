@@ -16,8 +16,9 @@ case "$action" in
     if [[ "$action" == clean ]]; then module=cleanup; fi
     exec .venv/bin/python -m "bda.batch.$module" "$@"
     ;;
-  lake|benchmark|test)
+  lake|benchmark|export|test)
     script="/workspace/bda/batch/$action.py"
+    if [[ "$action" == export ]]; then script="/workspace/bda/analytics/export.py"; fi
     if [[ "$action" == test ]]; then
       exec docker run --rm --cpus 2 --memory 3g \
         -e RUN_BATCH_SPARK_TESTS=1 -e SPARK_LOCAL_IP=127.0.0.1 \

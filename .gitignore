@@ -32,3 +32,8 @@ backend/calibration.json
 # Generated Phase 2 demonstration manifests and local outputs
 /artifacts/phase2/
 /artifacts/phase3/
+
+# Reviewed, compact aggregate serving snapshot (contains no raw acoustic events)
+!bda/reports/phase4/history.sqlite
+/frontend/test-results/
+/frontend/playwright-report/
