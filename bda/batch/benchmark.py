@@ -63,11 +63,20 @@ def records(path):
         except ValueError:
             errors.append({'status':'invalid_journal_line','line':number})
             continue
-        run = row.get('run_id')
+        if not isinstance(row,dict) or not isinstance(row.get('run_id'),str) or not row.get('run_id'):
+            errors.append({'status':'invalid_journal_record','line':number})
+            continue
+        run = row['run_id']
         if row.get('record_type') == 'started':
-            started[run] = row
+            if run in started:
+                errors.append({'status':'duplicate_start','line':number,'record':row})
+            else:
+                started[run] = row
         elif row.get('record_type') == 'result':
-            outcomes[run] = row
+            if run in outcomes:
+                errors.append({'status':'duplicate_outcome','line':number,'record':row})
+            else:
+                outcomes[run] = row
         else:
             errors.append({'status':'unknown_journal_record','line':number})
     return [outcomes.get(run,dict(row,status='incomplete')) for run,row in started.items()] + errors

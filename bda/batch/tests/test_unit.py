@@ -62,7 +62,7 @@ def test_fixture_and_cleanup(tmp_path):
         checked(Path.cwd()/'artifacts'/'phase3')
 
 
-@pytest.mark.parametrize('config',[Config(count=0),Config(sources=0),Config(peak_hour=25),Config(start='2026-01-01'),Config(anomaly_every=-1)])
+@pytest.mark.parametrize('config',[Config(count=0),Config(sources=0),Config(peak_hour=25),Config(start='2026-01-01'),Config(start='2026-01-01T01:00:00Z'),Config(anomaly_every=-1)])
 def test_config(config):
     with pytest.raises(ValueError):
         config.validate()
@@ -93,3 +93,15 @@ def test_event_metrics(tmp_path):
     (tmp_path/'events_1').write_text('\n'.join(json.dumps(e) for e in events))
     result = event_metrics(tmp_path)['trial']
     assert result['tasks']==1 and result['input_bytes']==100 and result['shuffle_write_bytes']==25
+
+
+def test_duplicate_outcomes_never_replace_failure(tmp_path):
+    from bda.batch.benchmark import records as parse
+    path = tmp_path/'journal'
+    path.write_text('\n'.join(json.dumps(row) for row in [
+        dict(record_type='started',run_id='a'),dict(record_type='result',run_id='a',status='failed'),
+        dict(record_type='result',run_id='a',status='success'),[]]))
+    rows = parse(path)
+    assert rows[0]['status']=='failed'
+    assert rows[1]['status']=='duplicate_outcome'
+    assert rows[2]['status']=='invalid_journal_record'

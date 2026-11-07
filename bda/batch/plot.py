@@ -40,9 +40,11 @@ def render(paths, output):
             if bar:
                 ax.bar([str(x) for x in xs],ys,label=name_)
             else:
-                ax.plot(xs,ys,marker='o',label=name_)
+                low = [ys[i]-min(v) for i,(_,v) in enumerate(ordered)]
+                high = [max(v)-ys[i] for i,(_,v) in enumerate(ordered)]
+                ax.errorbar(xs,ys,yerr=[low,high],marker='o',capsize=3,label=name_)
         ax.set(xlabel=xlabel,ylabel=ylabel)
-        ax.set_title('EchoTrace Phase 3 — measured medians (OS cache uncontrolled)')
+        ax.set_title('EchoTrace Phase 3 — medians and min/max range (OS cache uncontrolled)')
         ax.legend(fontsize=7)
         ax.grid(axis='y',alpha=.3)
         fig.tight_layout()
@@ -59,9 +61,9 @@ def render(paths, output):
     series = defaultdict(lambda:defaultdict(list))
     for row in rows:
         if row['engine']=='spark':
-            key = f"{row['master']} / in {row['input_partitions']} / shuffle {row['shuffle_partitions']}"
-            series[str(row['record_count'])+' records'][key].append(row['duration_seconds'])
-    save('partition-runtime','Master / actual input partitions / shuffle partitions','Execution time (s)',series)
+            key = f"{row['master']}\ninput={row['requested_input_partitions']}, shuffle={row['shuffle_partitions']}"
+            series[f"{row['record_count']:,} records"][key].append(row['duration_seconds'])
+    save('partition-runtime','Master / requested input partitions / shuffle partitions (actual counts in trials.json)','Execution time (s)',series)
     series = defaultdict(lambda:defaultdict(list))
     for row in rows:
         if row.get('validated_bytes') is not None:

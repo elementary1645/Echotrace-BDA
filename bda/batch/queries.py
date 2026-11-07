@@ -5,7 +5,7 @@ QUERIES = {
  'total': 'SELECT count(*) AS event_count FROM history',
  'hourly': "SELECT date_trunc('hour',event_time) AS hour, count(*) AS event_count FROM history GROUP BY 1",
  'daily': 'SELECT event_date, count(*) AS event_count FROM history GROUP BY 1',
- 'categories': 'SELECT category, count(*) AS event_count, avg(confidence) AS avg_confidence FROM history GROUP BY category',
+ 'categories': 'SELECT category, count(*) AS event_count, avg(confidence) AS avg_confidence FROM history GROUP BY category ORDER BY event_count DESC,category',
  'zones': 'SELECT zone, count(*) AS event_count FROM history GROUP BY zone',
  'sources': 'SELECT source_id, count(*) AS event_count, avg(confidence) AS avg_confidence FROM history GROUP BY source_id',
  'classification': 'SELECT source, count(*) AS event_count FROM history GROUP BY source',

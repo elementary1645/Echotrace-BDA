@@ -32,6 +32,7 @@ def test_all_queries(spark,events):
     assert sorted(r.event_count for r in query(events,'hourly').collect()) == [1,1,2]
     assert {str(r.event_date):r.event_count for r in query(events,'daily').collect()} == {'2026-01-01':3,'2026-01-02':1}
     categories = {r.category:r for r in query(events,'categories').collect()}
+    assert query(events,'categories').first().category == 'A'
     assert categories['A'].event_count == 3
     assert categories['A'].avg_confidence == pytest.approx(2.5/3)
     assert {r.zone:r.event_count for r in query(events,'zones').collect()} == {'LEFT':1,'UNKNOWN':2,'RIGHT':1}
@@ -87,3 +88,18 @@ def test_lake_baseline_roundtrip(spark,tmp_path):
     assert spark.read.parquet(str(target/'quarantine')).count() == 0
     assert stored.select('record_id').distinct().count() == 100
     assert {str(r.event_date):r.event_count for r in query(stored,'daily').collect()} == metadata['expected']['daily']
+
+
+def test_quality_lake(spark,tmp_path):
+    from bda.batch.fixtures import generate
+    from bda.batch.lake import build
+    from bda.batch.baseline import manifest
+    source,target = tmp_path/'quality',tmp_path/'quality-lake'
+    generate(source)
+    with pytest.raises(FileNotFoundError):
+        manifest(source)
+    result = build(spark,source,target,fixture=True)
+    assert result['origin']=='synthetic-quality'
+    assert result['validated_count']==3
+    assert spark.read.parquet(str(target/'quarantine')).count()==2
+    assert spark.read.parquet(str(target/'validated')).filter("event_date = '2025-01-01'").count()==1

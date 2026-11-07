@@ -36,7 +36,10 @@ class Config:
             raise ValueError('invalid peak hour or anomaly interval')
         if self.format not in ('jsonl','jsonl.gz'):
             raise ValueError('format must be jsonl or jsonl.gz')
-        if datetime.fromisoformat(self.start).utcoffset() != timedelta(0):
+        start = datetime.fromisoformat(self.start.replace('Z','+00:00'))
+        if (start.hour,start.minute,start.second,start.microsecond) != (0,0,0,0):
+            raise ValueError('start must be UTC midnight so peak_hour describes a clock hour')
+        if start.utcoffset() != timedelta(0):
             raise ValueError('start must be explicit UTC')
 
     @cached_property
@@ -47,7 +50,7 @@ class Config:
 def records(config):
     config.validate()
     rng = random.Random(config.seed)
-    start = datetime.fromisoformat(config.start)
+    start = datetime.fromisoformat(config.start.replace('Z','+00:00'))
     weights = [1 if h < 6 or h >= 23 else 4 for h in range(24)]
     weights[config.peak_hour] = 12
     for i in range(config.count):
