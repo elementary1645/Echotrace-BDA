@@ -1,0 +1,1 @@
+{"end": "2026-01-03T00:00:00Z", "input_snapshot": "/artifacts/lake-100k", "output_bytes": 2642, "query": "hourly", "query_and_write_seconds": 13.199837766999735, "start": "2026-01-01T00:00:00Z"}

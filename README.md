@@ -28,3 +28,6 @@ Kafka analytics integration, schema semantics, setup, tests, and delivery limits
 [BDA Phase 1 guide](bda/README.md).
 
 Phase 2 streaming analytics: [Spark setup, recovery, tests and demonstrations](bda/PHASE2.md).
+
+Phase 3: [historical Spark SQL analytics and reproducible benchmarks](bda/PHASE3.md),
+with [executed validation and measured results](bda/PHASE3_VALIDATION.md).
